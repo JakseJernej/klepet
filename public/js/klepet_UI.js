@@ -1,6 +1,6 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  var jeSlika = sporocilo.match(/(https?:\/\/.*\.(?:png|jpg))/i);
+  var jeSlika = sporocilo.match(/(https?:\/\/.*\.(?:png|jpg|gif))/i);
   
   if (jeSlika){
    return $('<div style="font-weight: bold"></div>').html(sporocilo);
