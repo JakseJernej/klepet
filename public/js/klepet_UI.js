@@ -1,11 +1,16 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
   var jeSlika = sporocilo.match(/(https?:\/\/.*\.(?:png|jpg|gif))/i);
+  var jeVideo = sporocilo.match(/((http(s)?:\/\/)?)(www\.)?((youtube\.com\/)|(youtu.be\/)|(y2u.be\/))[\S]+/gi);
+  
+  if(jeVideo) {
+    return $('<div style="font-weight: bold"></div>').html(sporocilo); 
+  }
   
   if (jeSlika){
    return $('<div style="font-weight: bold"></div>').html(sporocilo);
   }
-  
+
   if (jeSmesko) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
@@ -22,7 +27,8 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
   sporocilo = urlToPic(sporocilo);
-  
+  sporocilo = dodajVidee(sporocilo);
+
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -170,4 +176,35 @@ function urlToPic(vhodnoBesedilo){
        return '<img src="'+match+'"width="200px" style="padding-left: 20px;" />';
     }
   });
+}
+
+function getId(link) {
+    
+    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = link.match(regExp);
+
+    if (match && match[2].length == 11) {
+      
+        return match[2];
+        
+    }
+}
+
+function dodajVidee(vhodnoBesedilo) {
+  
+  if(vhodnoBesedilo.match(/((http(s)?:\/\/)?)(www\.)?((youtube\.com\/)|(youtu.be\/)|(y2u.be\/))[\S]+/gi)){
+    
+    var lnk = vhodnoBesedilo.match(/((http(s)?:\/\/)?)(www\.)?((youtube\.com\/)|(youtu.be\/)|(y2u.be\/))[\S]+/gi);
+    
+    for(var k = 0; k < lnk.length; k++){
+      
+      var ID = getId(lnk[k]);
+      
+      vhodnoBesedilo = vhodnoBesedilo+ "<iframe id='video' width='200' height='150' style='padding-left: 20px' frameborder='0' src='//www.youtube.com/embed/" + ID + "' allowfullscreen></iframe>"
+      
+    }
+  }
+  
+  return vhodnoBesedilo;
+
 }
